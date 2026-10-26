@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiction Phone</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: white;
+  background: #10131f;
+}
+.phone {
+  min-height: 100dvh;
+  background: linear-gradient(150deg,#29345d,#72577d,#191b32);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px;
+}
+.status {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+.clock {
+  margin-top: 90px;
+  font-size: 76px;
+  font-weight: 200;
+  letter-spacing: -3px;
+}
+.date { font-size: 19px; }
+.unlock {
+  margin-top: auto;
+  text-align: center;
+  width: 100%;
+}
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin: 22px 0;
+}
+.dot {
+  width: 13px;
+  height: 13px;
+  border: 1px solid white;
+  border-radius: 50%;
+}
+.dot.filled { background: white; }
+.keys {
+  display: grid;
+  grid-template-columns: repeat(3, 70px);
+  justify-content: center;
+  gap: 14px 22px;
+}
+button {
+  width: 70px;
+  height: 70px;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  background: #ffffff35;
+  font-size: 28px;
+}
+.message {
+  height: 24px;
+  font-size: 14px;
+}
+.home {
+  display: none;
+  margin: auto;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="status">
+    <span>9:41</span>
+    <span>●●●  Wi-Fi  ▰</span>
+  </div>
+  <div class="clock" id="clock">9:41</div>
+  <div class="date" id="date"></div>
+
+  <div class="unlock" id="unlock">
+    <p>Enter Passcode</p>
+    <div class="dots" id="dots"></div>
+    <div class="keys" id="keys"></div>
+    <p class="message" id="message"></p>
+  </div>
+
+  <div class="home" id="home">
+    <h1>Welcome Home ♡</h1>
+    <p>ปลดล็อกสำเร็จแล้ว!</p>
+    <p>เร็ว ๆ นี้จะมีแอปและข้อความของตัวละคร</p>
+  </div>
+</div>
+<script>
+const passcode = "0825";
+let entered = "";
+const keys = document.getElementById("keys");
+const dots = document.getElementById("dots");
+
+function drawDots() {
+  dots.innerHTML = "";
+  for (let i = 0; i < 4; i++) {
+    const dot = document.createElement("div");
+    dot.className = "dot" + (i < entered.length ? " filled" : "");
+    dots.appendChild(dot);
+  }
+}
+function pressKey(value) {
+  if (value === "delete") {
+    entered = entered.slice(0, -1);
+  } else if (entered.length < 4) {
+    entered += value;
+  }
+  drawDots();
+  if (entered.length === 4) {
+    if (entered === passcode) {
+      document.getElementById("unlock").style.display = "none";
+      document.getElementById("clock").style.display = "none";
+      document.getElementById("date").style.display = "none";
+      document.getElementById("home").style.display = "block";
+    } else {
+      document.getElementById("message").textContent = "รหัสผ่านไม่ถูกต้อง";
+      entered = "";
+      setTimeout(drawDots, 350);
+    }
+  }
+}
+["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(n => {
+  const b = document.createElement("button");
+  if (n) {
+    b.textContent = n;
+    b.onclick = () => pressKey(n === "⌫" ? "delete" : n);
+  } else {
+    b.style.visibility = "hidden";
+  }
+  keys.appendChild(b);
+});
+function updateClock() {
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("date").textContent =
+    now.toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long"});
+}
+updateClock();
+drawDots();
+</script>
+</body>
+</html>
